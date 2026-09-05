@@ -86,6 +86,13 @@ Dưới đây là bảng 8 biến cấu hình trọng yếu được tự độn
 5. **Tái cấu trúc & Đổi mới thương hiệu sang VAWAY Mail Server (Rebranding):**
    - *Yêu cầu:* Loại bỏ toàn bộ nhãn hiệu cũ, chuyển đổi toàn diện sang thương hiệu VAWAY.
    - *Cách xử lý:* Cập nhật toàn bộ Provider, hook `useVawayMail`, logo SVG vector hiện đại, file cấu hình `.env`, `docker-compose`, profile `.mobileconfig` và hệ thống DNS DKIM selector `vaway._domainkey`.
+6. **Cập nhật Giao diện Phong cách Gmail & Thay thế các placeholder Meet/Hangouts:**
+   - *Yêu cầu:* Chuyển đổi giao diện sang phong cách Gmail (màu sắc, thanh tìm kiếm bo tròn, floating compose window docked góc dưới, category tabs Primary/Social/Promotions). Đồng thời loại bỏ hoàn toàn các tiện ích Google không liên quan (như Google Meet, Google Hangouts), thay bằng các công cụ email thực tế có thể bấm vào là làm việc được ngay.
+   - *Cách xử lý:*
+     1. Tích hợp **Company Directory (Sổ danh bạ doanh nghiệp)**: Hiển thị đồng nghiệp trong công ty kèm trạng thái hoạt động; bấm vào đồng nghiệp bất kỳ sẽ tự động mở cửa sổ Soạn thư gửi ngay đến người đó.
+     2. Tích hợp **1-Click Shield Alias (Tạo bí danh ẩn danh chống spam)**: Tạo ngay bí danh bảo vệ quyền riêng tư trỏ về hòm thư đang đăng nhập chỉ với 1 click.
+     3. Tích hợp **Download iOS/macOS .mobileconfig Profile**: Tải profile cấu hình Apple Mail tự động điền sẵn host IMAP/SMTP và SSL.
+     4. Tích hợp **Copy Server Ports & Live DNS Inspector**: Sao chép nhanh cổng kết nối 993/465/587 và kiểm tra trạng thái SPF/DKIM/DMARC của tên miền.
 
 ---
 

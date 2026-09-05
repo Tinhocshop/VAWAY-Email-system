@@ -39,6 +39,7 @@ const MainContent: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [composeRecipient, setComposeRecipient] = useState('');
 
   const isMailFolder = [
     'inbox',
@@ -52,6 +53,16 @@ const MainContent: React.FC = () => {
     'webmail',
   ].includes(activeView);
 
+  const handleOpenCompose = (recipient?: string) => {
+    setComposeRecipient(recipient || '');
+    setIsComposeOpen(true);
+  };
+
+  const handleCloseCompose = () => {
+    setIsComposeOpen(false);
+    setComposeRecipient('');
+  };
+
   const renderActiveView = () => {
     if (isMailFolder) {
       return (
@@ -59,8 +70,9 @@ const MainContent: React.FC = () => {
           initialFolder={activeView === 'webmail' ? 'inbox' : activeView}
           searchTerm={searchTerm}
           isComposeOpen={isComposeOpen}
-          onCloseCompose={() => setIsComposeOpen(false)}
-          onOpenCompose={() => setIsComposeOpen(true)}
+          composeRecipient={composeRecipient}
+          onCloseCompose={handleCloseCompose}
+          onOpenCompose={handleOpenCompose}
         />
       );
     }
@@ -90,8 +102,9 @@ const MainContent: React.FC = () => {
             initialFolder="inbox"
             searchTerm={searchTerm}
             isComposeOpen={isComposeOpen}
-            onCloseCompose={() => setIsComposeOpen(false)}
-            onOpenCompose={() => setIsComposeOpen(true)}
+            composeRecipient={composeRecipient}
+            onCloseCompose={handleCloseCompose}
+            onOpenCompose={handleOpenCompose}
           />
         );
     }
@@ -116,7 +129,7 @@ const MainContent: React.FC = () => {
           onSelectView={(view) => setActiveView(view)}
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
-          onOpenCompose={() => setIsComposeOpen(true)}
+          onOpenCompose={handleOpenCompose}
         />
 
         {/* Dynamic Main View */}
@@ -137,4 +150,3 @@ export function App() {
 }
 
 export default App;
-
