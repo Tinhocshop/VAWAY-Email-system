@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Domain } from '../types';
+import { User } from '../types';
 import { useVawayMail } from '../context/VawayMailContext';
 import {
   X,
@@ -7,494 +7,334 @@ import {
   Plane,
   Forward,
   ShieldCheck,
-  Sliders,
 } from 'lucide-react';
 
 interface UserModalProps {
-  userToEdit?: User | null;
-  domains: Domain[];
+  user?: User | null;
   onClose: () => void;
 }
 
-export const UserModal: React.FC<UserModalProps> = ({ userToEdit, domains, onClose }) => {
-  const { addUser, updateUser } = useVawayMail();
-  const isEditing = !!userToEdit;
+export const UserModal: React.FC<UserModalProps> = ({ user, onClose }) => {
+  const { domains, addUser, updateUser } = useVawayMail();
+  const isEditing = !!user;
 
-  const [activeTab, setActiveTab] = useState<'general' | 'autoreply' | 'forwarding' | 'spam'>('general');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [activeTab, setActiveTab] = useState<'general' | 'vacation' | 'forward' | 'security'>('general');
 
-  // Form states
-  const [localpart, setLocalpart] = useState(userToEdit?.localpart || '');
-  const [domainName, setDomainName] = useState(userToEdit?.domain_name || domains[0]?.name || '');
-  const [displayedName, setDisplayedName] = useState(userToEdit?.displayed_name || '');
-  const [password, setPassword] = useState('');
-  const [quotaGb, setQuotaGb] = useState(
-    userToEdit ? (userToEdit.quota_bytes / (1024 * 1024 * 1024)).toFixed(0) : '2'
-  );
-  const [enabled, setEnabled] = useState(userToEdit ? userToEdit.enabled : true);
-  const [enableImap, setEnableImap] = useState(userToEdit ? userToEdit.enable_imap : true);
-  const [enablePop, setEnablePop] = useState(userToEdit ? userToEdit.enable_pop : true);
-  const [globalAdmin, setGlobalAdmin] = useState(userToEdit ? userToEdit.global_admin : false);
-  const [comment, setComment] = useState(userToEdit?.comment || '');
-
-  // Auto reply
-  const [autoReplyEnabled, setAutoReplyEnabled] = useState(userToEdit?.auto_reply_enabled || false);
-  const [autoReplySubject, setAutoReplySubject] = useState(userToEdit?.auto_reply_subject || '');
-  const [autoReplyBody, setAutoReplyBody] = useState(userToEdit?.auto_reply_body || '');
-  const [autoReplyStart, setAutoReplyStart] = useState(userToEdit?.auto_reply_start || '');
-  const [autoReplyEnd, setAutoReplyEnd] = useState(userToEdit?.auto_reply_end || '');
-
-  // Forwarding
-  const [forwardEnabled, setForwardEnabled] = useState(userToEdit?.forward_enabled || false);
-  const [forwardDestinations, setForwardDestinations] = useState(
-    userToEdit ? userToEdit.forward_destination.join(', ') : ''
-  );
-  const [forwardKeep, setForwardKeep] = useState(userToEdit ? userToEdit.forward_keep : true);
-
-  // Spam
-  const [spamEnabled, setSpamEnabled] = useState(userToEdit ? userToEdit.spam_enabled : true);
-  const [spamThreshold, setSpamThreshold] = useState(userToEdit ? userToEdit.spam_threshold : 80);
-  const [spamMarkAsRead, setSpamMarkAsRead] = useState(userToEdit ? userToEdit.spam_mark_as_read : false);
+  const [formData, setFormData] = useState({
+    localpart: user ? user.email.split('@')[0] : '',
+    domain_name: user ? user.domain_name : domains[0]?.name || 'example.com',
+    displayed_name: user ? user.displayed_name : '',
+    password: '',
+    quota_gb: user ? (user.quota_bytes / (1024 * 1024 * 1024)).toFixed(0) : '15',
+    enabled: user ? user.enabled : true,
+    global_admin: user ? user.global_admin : false,
+    auto_reply_enabled: user ? user.auto_reply_enabled : false,
+    auto_reply_body: user ? user.auto_reply_body || '' : '',
+    forward_enabled: user ? user.forward_enabled : false,
+    forward_destination: user ? user.forward_destination?.join(', ') || '' : '',
+    forward_keep: user ? user.forward_keep : true,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage('');
-
-    const quotaBytes = parseFloat(quotaGb) * 1024 * 1024 * 1024;
-    const destinations = forwardDestinations
+    const quotaBytes = Number(formData.quota_gb) * 1024 * 1024 * 1024;
+    const destinations = formData.forward_destination
       .split(',')
-      .map((d) => d.trim().toLowerCase())
+      .map((s) => s.trim())
       .filter(Boolean);
 
-    if (isEditing && userToEdit) {
-      updateUser(userToEdit.email, {
-        displayed_name: displayedName,
+    if (isEditing && user) {
+      updateUser(user.email, {
+        displayed_name: formData.displayed_name,
         quota_bytes: quotaBytes,
-        enabled,
-        enable_imap: enableImap,
-        enable_pop: enablePop,
-        global_admin: globalAdmin,
-        comment,
-        auto_reply_enabled: autoReplyEnabled,
-        auto_reply_subject: autoReplySubject,
-        auto_reply_body: autoReplyBody,
-        auto_reply_start: autoReplyStart,
-        auto_reply_end: autoReplyEnd,
-        forward_enabled: forwardEnabled,
+        enabled: formData.enabled,
+        global_admin: formData.global_admin,
+        auto_reply_enabled: formData.auto_reply_enabled,
+        auto_reply_body: formData.auto_reply_body,
+        forward_enabled: formData.forward_enabled,
         forward_destination: destinations,
-        forward_keep: forwardKeep,
-        spam_enabled: spamEnabled,
-        spam_threshold: Number(spamThreshold),
-        spam_mark_as_read: spamMarkAsRead,
+        forward_keep: formData.forward_keep,
       });
-      onClose();
     } else {
-      if (!localpart.trim() || !domainName) {
-        setErrorMessage('Localpart and domain are required.');
-        return;
-      }
-      const fullEmail = `${localpart.trim().toLowerCase()}@${domainName.toLowerCase()}`;
-      const success = addUser({
-        email: fullEmail,
-        localpart: localpart.trim().toLowerCase(),
-        domain_name: domainName.toLowerCase(),
-        displayed_name: displayedName || localpart.trim(),
+      const email = `${formData.localpart.toLowerCase().trim()}@${formData.domain_name.toLowerCase()}`;
+      addUser({
+        email,
+        localpart: formData.localpart.toLowerCase().trim(),
+        domain_name: formData.domain_name.toLowerCase(),
+        displayed_name: formData.displayed_name || formData.localpart,
         quota_bytes: quotaBytes,
-        enabled,
-        enable_imap: enableImap,
-        enable_pop: enablePop,
-        global_admin: globalAdmin,
-        comment,
-        auto_reply_enabled: autoReplyEnabled,
-        auto_reply_subject: autoReplySubject,
-        auto_reply_body: autoReplyBody,
-        auto_reply_start: autoReplyStart,
-        auto_reply_end: autoReplyEnd,
-        forward_enabled: forwardEnabled,
+        quota_used_bytes: 0,
+        enabled: formData.enabled,
+        global_admin: formData.global_admin,
+        auto_reply_enabled: formData.auto_reply_enabled,
+        auto_reply_subject: 'Out of Office Auto-Reply',
+        auto_reply_body: formData.auto_reply_body,
+        forward_enabled: formData.forward_enabled,
         forward_destination: destinations,
-        forward_keep: forwardKeep,
-        spam_enabled: spamEnabled,
-        spam_threshold: Number(spamThreshold),
-        spam_mark_as_read: spamMarkAsRead,
+        forward_keep: formData.forward_keep,
+        created_at: new Date().toISOString(),
       });
-
-      if (!success) {
-        setErrorMessage(`User with email ${fullEmail} already exists.`);
-        return;
-      }
-      onClose();
     }
+
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 select-none">
+      <div className="bg-white border border-[#dadce0] rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Mail className="w-5 h-5 text-sky-400" />
-            <div>
-              <h3 className="text-base font-bold text-white">
-                {isEditing ? `Edit Mailbox: ${userToEdit?.email}` : 'Create New Mailbox'}
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Configure account credentials, storage limits, auto-reply, and forwarding rules.
-              </p>
-            </div>
+        <div className="p-5 border-b border-[#dadce0] flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-[#202124]">
+              {isEditing ? `Edit Mailbox: ${user?.email}` : 'Provision New Mailbox'}
+            </h3>
+            <p className="text-xs text-[#5f6368] mt-0.5">
+              Configure user credentials, mailbox capacity, auto-responder, and forwarding.
+            </p>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-[#5f6368] hover:text-[#202124] hover:bg-[#f1f3f4] rounded-full transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-slate-800 px-5 gap-3 text-xs font-medium bg-slate-950/30">
+        {/* Tab switch */}
+        <div className="flex border-b border-[#dadce0] px-5 gap-6 text-xs font-medium bg-[#f8fafd]">
           <button
-            type="button"
             onClick={() => setActiveTab('general')}
             className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-              activeTab === 'general' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+              activeTab === 'general'
+                ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+                : 'border-transparent text-[#5f6368] hover:text-[#202124]'
             }`}
           >
-            <Sliders className="w-3.5 h-3.5" />
-            General & Quota
+            <Mail className="w-3.5 h-3.5" />
+            General Info
           </button>
           <button
-            type="button"
-            onClick={() => setActiveTab('autoreply')}
+            onClick={() => setActiveTab('vacation')}
             className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-              activeTab === 'autoreply' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+              activeTab === 'vacation'
+                ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+                : 'border-transparent text-[#5f6368] hover:text-[#202124]'
             }`}
           >
             <Plane className="w-3.5 h-3.5" />
-            Auto-Reply (Vacation)
-            {autoReplyEnabled && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+            Out of Office
           </button>
           <button
-            type="button"
-            onClick={() => setActiveTab('forwarding')}
+            onClick={() => setActiveTab('forward')}
             className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-              activeTab === 'forwarding' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+              activeTab === 'forward'
+                ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+                : 'border-transparent text-[#5f6368] hover:text-[#202124]'
             }`}
           >
             <Forward className="w-3.5 h-3.5" />
             Forwarding
-            {forwardEnabled && <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />}
           </button>
           <button
-            type="button"
-            onClick={() => setActiveTab('spam')}
+            onClick={() => setActiveTab('security')}
             className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-              activeTab === 'spam' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+              activeTab === 'security'
+                ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+                : 'border-transparent text-[#5f6368] hover:text-[#202124]'
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            Antispam
+            Permissions
           </button>
         </div>
 
-        {/* Content */}
-        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto flex-1 space-y-4 text-xs">
-          {errorMessage && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
-              {errorMessage}
-            </div>
-          )}
-
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 text-xs space-y-4">
           {activeTab === 'general' && (
-            <div className="space-y-4">
-              {/* Address */}
+            <>
               {!isEditing ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-slate-300 font-medium mb-1">Localpart</label>
+                <div>
+                  <label className="block text-[#5f6368] font-semibold mb-1">Email Address</label>
+                  <div className="flex gap-2 items-center">
                     <input
                       type="text"
                       required
-                      placeholder="e.g. john"
-                      value={localpart}
-                      onChange={(e) => setLocalpart(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                      placeholder="username"
+                      value={formData.localpart}
+                      onChange={(e) => setFormData({ ...formData, localpart: e.target.value })}
+                      className="flex-1 px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-slate-300 font-medium mb-1">Domain</label>
+                    <span className="text-[#5f6368] font-bold text-sm">@</span>
                     <select
-                      value={domainName}
-                      onChange={(e) => setDomainName(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:border-sky-500"
+                      value={formData.domain_name}
+                      onChange={(e) => setFormData({ ...formData, domain_name: e.target.value })}
+                      className="px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                     >
                       {domains.map((d) => (
                         <option key={d.name} value={d.name}>
-                          @{d.name}
+                          {d.name}
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
-              ) : (
+              ) : null}
+
+              <div>
+                <label className="block text-[#5f6368] font-semibold mb-1">Display Name / Full Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. John Doe"
+                  value={formData.displayed_name}
+                  onChange={(e) => setFormData({ ...formData, displayed_name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
+                />
+              </div>
+
+              {!isEditing && (
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Email Address</label>
+                  <label className="block text-[#5f6368] font-semibold mb-1">Password</label>
                   <input
-                    type="text"
-                    disabled
-                    value={userToEdit.email}
-                    className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-400 font-mono"
+                    type="password"
+                    required
+                    placeholder="Enter secure mailbox password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                   />
                 </div>
               )}
 
-              {/* Display name & password */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">Displayed Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. John Doe"
-                    value={displayedName}
-                    onChange={(e) => setDisplayedName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-300 font-medium mb-1">
-                    {isEditing ? 'New Password (leave blank to keep)' : 'Initial Password'}
-                  </label>
-                  <input
-                    type="password"
-                    placeholder={isEditing ? '••••••••' : 'Enter secure password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-              </div>
-
-              {/* Quota */}
               <div>
-                <label className="block text-slate-300 font-medium mb-1 flex items-center justify-between">
-                  <span>Mailbox Quota (GB)</span>
-                  <span className="text-slate-400 font-normal">0 = unlimited</span>
-                </label>
+                <label className="block text-[#5f6368] font-semibold mb-1">Mailbox Storage Quota (GB)</label>
                 <input
                   type="number"
-                  min="0"
-                  step="0.5"
-                  value={quotaGb}
-                  onChange={(e) => setQuotaGb(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:border-sky-500"
+                  required
+                  value={formData.quota_gb}
+                  onChange={(e) => setFormData({ ...formData, quota_gb: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                 />
               </div>
 
-              {/* Protocol toggles */}
-              <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 space-y-2">
-                <span className="block font-medium text-slate-200 mb-1">Access & Protocol Permissions</span>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={enabled}
-                      onChange={(e) => setEnabled(e.target.checked)}
-                      className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                    />
-                    <span>Account Active</span>
-                  </label>
-                  <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={enableImap}
-                      onChange={(e) => setEnableImap(e.target.checked)}
-                      className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                    />
-                    <span>Enable IMAP</span>
-                  </label>
-                  <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={enablePop}
-                      onChange={(e) => setEnablePop(e.target.checked)}
-                      className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                    />
-                    <span>Enable POP3</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Admin Privileges */}
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 cursor-pointer">
+              <div className="flex items-center gap-2 pt-2">
                 <input
                   type="checkbox"
-                  checked={globalAdmin}
-                  onChange={(e) => setGlobalAdmin(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-amber-500"
+                  id="user_enabled"
+                  checked={formData.enabled}
+                  onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })}
+                  className="rounded text-[#1a73e8]"
                 />
-                <div>
-                  <span className="font-semibold block">Grant Global Administrator Access</span>
-                  <span className="text-[11px] text-amber-400/80 block">
-                    Allows user full administrative access to all domains, relays, and server configurations in VAWAY Mail Server.
-                  </span>
-                </div>
-              </label>
-
-              {/* Notes */}
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">Comment / Notes</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Finance department head"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500"
-                />
+                <label htmlFor="user_enabled" className="text-[#202124] font-medium cursor-pointer">
+                  Account is active and allowed to login
+                </label>
               </div>
-            </div>
+            </>
           )}
 
-          {activeTab === 'autoreply' && (
-            <div className="space-y-4">
-              <label className="flex items-center gap-2 text-slate-200 cursor-pointer font-medium">
+          {activeTab === 'vacation' && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={autoReplyEnabled}
-                  onChange={(e) => setAutoReplyEnabled(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
+                  id="vacation_chk"
+                  checked={formData.auto_reply_enabled}
+                  onChange={(e) => setFormData({ ...formData, auto_reply_enabled: e.target.checked })}
+                  className="rounded text-[#1a73e8]"
                 />
-                <span>Enable Automatic Out-of-Office / Vacation Responder</span>
-              </label>
+                <label htmlFor="vacation_chk" className="text-[#202124] font-semibold cursor-pointer">
+                  Enable Out of Office Auto-Reply
+                </label>
+              </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              {formData.auto_reply_enabled && (
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Start Date (Optional)</label>
-                  <input
-                    type="date"
-                    value={autoReplyStart}
-                    onChange={(e) => setAutoReplyStart(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
+                  <label className="block text-[#5f6368] font-semibold mb-1">Auto-Response Message</label>
+                  <textarea
+                    rows={4}
+                    value={formData.auto_reply_body}
+                    onChange={(e) => setFormData({ ...formData, auto_reply_body: e.target.value })}
+                    placeholder="I am currently away from the office with limited email access..."
+                    className="w-full p-3 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                   />
                 </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'forward' && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="fwd_chk"
+                  checked={formData.forward_enabled}
+                  onChange={(e) => setFormData({ ...formData, forward_enabled: e.target.checked })}
+                  className="rounded text-[#1a73e8]"
+                />
+                <label htmlFor="fwd_chk" className="text-[#202124] font-semibold cursor-pointer">
+                  Enable Inbound Mail Forwarding
+                </label>
+              </div>
+
+              {formData.forward_enabled && (
+                <>
+                  <div>
+                    <label className="block text-[#5f6368] font-semibold mb-1">Destination Address(es)</label>
+                    <input
+                      type="text"
+                      value={formData.forward_destination}
+                      onChange={(e) => setFormData({ ...formData, forward_destination: e.target.value })}
+                      placeholder="personal@gmail.com, backup@company.com"
+                      className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="fwd_keep"
+                      checked={formData.forward_keep}
+                      onChange={(e) => setFormData({ ...formData, forward_keep: e.target.checked })}
+                      className="rounded text-[#1a73e8]"
+                    />
+                    <label htmlFor="fwd_keep" className="text-[#5f6368] cursor-pointer">
+                      Keep a local copy in this mailbox
+                    </label>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'security' && (
+            <div className="space-y-4">
+              <div className="p-3.5 rounded-2xl bg-[#e8f0fe] border border-[#d2e3fc] flex items-center justify-between">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">End Date (Optional)</label>
-                  <input
-                    type="date"
-                    value={autoReplyEnd}
-                    onChange={(e) => setAutoReplyEnd(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
-                  />
+                  <span className="font-bold text-[#1a73e8] block">Global Administrator Rights</span>
+                  <span className="text-[11px] text-[#1a73e8]">Grants full access to all domains, API keys, and user management.</span>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">Auto-Reply Subject</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Out of Office: On Vacation"
-                  value={autoReplySubject}
-                  onChange={(e) => setAutoReplySubject(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">Auto-Reply Message Body</label>
-                <textarea
-                  rows={4}
-                  placeholder="Hello, I am currently out of office and will respond upon my return..."
-                  value={autoReplyBody}
-                  onChange={(e) => setAutoReplyBody(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'forwarding' && (
-            <div className="space-y-4">
-              <label className="flex items-center gap-2 text-slate-200 cursor-pointer font-medium">
                 <input
                   type="checkbox"
-                  checked={forwardEnabled}
-                  onChange={(e) => setForwardEnabled(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                />
-                <span>Enable Inbound Email Forwarding</span>
-              </label>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Forward Destination Addresses (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. backup@external.com, colleague@example.com"
-                  value={forwardDestinations}
-                  onChange={(e) => setForwardDestinations(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                  checked={formData.global_admin}
+                  onChange={(e) => setFormData({ ...formData, global_admin: e.target.checked })}
+                  className="rounded text-[#1a73e8] w-4 h-4"
                 />
               </div>
-
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={forwardKeep}
-                  onChange={(e) => setForwardKeep(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                />
-                <span>Keep a copy in this VAWAY mailbox when forwarding</span>
-              </label>
-            </div>
-          )}
-
-          {activeTab === 'spam' && (
-            <div className="space-y-4">
-              <label className="flex items-center gap-2 text-slate-200 cursor-pointer font-medium">
-                <input
-                  type="checkbox"
-                  checked={spamEnabled}
-                  onChange={(e) => setSpamEnabled(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                />
-                <span>Enable Rspamd Heuristic Spam Filtering for this account</span>
-              </label>
-
-              <div>
-                <label className="block text-slate-300 font-medium mb-1 flex items-center justify-between">
-                  <span>Spam Sensitivity Threshold ({spamThreshold})</span>
-                  <span className="text-slate-400">Default: 80</span>
-                </label>
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={spamThreshold}
-                  onChange={(e) => setSpamThreshold(parseInt(e.target.value))}
-                  className="w-full accent-sky-500"
-                />
-              </div>
-
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={spamMarkAsRead}
-                  onChange={(e) => setSpamMarkAsRead(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                />
-                <span>Automatically mark detected spam as read in the Junk folder</span>
-              </label>
             </div>
           )}
 
           {/* Footer */}
-          <div className="pt-4 border-t border-slate-800 flex justify-end gap-2.5">
+          <div className="pt-4 border-t border-[#dadce0] flex justify-end gap-2 bg-white">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium"
+              className="px-4 py-2 bg-[#f1f3f4] text-[#202124] rounded-full font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-semibold"
+              className="px-5 py-2 bg-[#0b57d0] hover:bg-[#0842a0] text-white rounded-full font-semibold shadow-xs"
             >
               {isEditing ? 'Save Changes' : 'Create Mailbox'}
             </button>

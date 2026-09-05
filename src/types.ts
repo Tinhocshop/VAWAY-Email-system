@@ -95,15 +95,22 @@ export interface ServiceStatus {
 export interface SimulatedEmail {
   id: string;
   from: string;
+  senderName?: string;
   to: string;
   subject: string;
   body: string;
   date: string;
-  folder: 'inbox' | 'sent' | 'spam' | 'trash';
+  timeDisplay?: string;
+  folder: 'inbox' | 'sent' | 'spam' | 'trash' | 'drafts' | 'snoozed';
+  category?: 'primary' | 'social' | 'promotions';
   read: boolean;
+  starred?: boolean;
+  important?: boolean;
+  labels?: { name: string; color: 'red' | 'gray' | 'blue' | 'green' | 'amber' }[];
   spamScore: number;
   dkimStatus: 'pass' | 'fail' | 'none';
   spfStatus: 'pass' | 'softfail' | 'none';
+  avatarColor?: string;
 }
 
 export type EmailMessage = SimulatedEmail;

@@ -80,6 +80,9 @@ export interface VawayMailContextType {
   sendEmail: (fromOrTo: string, toOrSubject: string, subjectOrBody: string, bodyOptional?: string) => void;
   markEmailAsRead: (id: string) => void;
   markEmailRead: (id: string) => void;
+  toggleStarEmail: (id: string) => void;
+  toggleImportantEmail: (id: string) => void;
+  snoozeEmail: (id: string) => void;
   markSpam: (id: string, isSpam: boolean) => void;
   deleteEmail: (id: string) => void;
   resetAllData: () => void;
@@ -579,6 +582,24 @@ export const VawayMailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     );
   };
 
+  const toggleStarEmail = (id: string) => {
+    setEmails((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, starred: !m.starred } : m))
+    );
+  };
+
+  const toggleImportantEmail = (id: string) => {
+    setEmails((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, important: !m.important } : m))
+    );
+  };
+
+  const snoozeEmail = (id: string) => {
+    setEmails((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, folder: 'snoozed' as const } : m))
+    );
+  };
+
   const markSpam = (id: string, isSpam: boolean) => {
     setEmails((prev) =>
       prev.map((m) => {
@@ -665,6 +686,9 @@ export const VawayMailProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         sendEmail,
         markEmailAsRead,
         markEmailRead: markEmailAsRead,
+        toggleStarEmail,
+        toggleImportantEmail,
+        snoozeEmail,
         markSpam,
         deleteEmail,
         resetAllData,

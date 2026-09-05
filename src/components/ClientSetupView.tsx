@@ -14,7 +14,7 @@ import {
 export const ClientSetupView: React.FC = () => {
   const { config, currentAccount, users } = useVawayMail();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [selectedClient, setSelectedClient] = useState<'general' | 'apple' | 'thunderbird' | 'outlook' | 'dav'>('general');
+  const [selectedClient, setSelectedClient] = useState<'general' | 'apple' | 'dav'>('general');
 
   const currentUser = users.find((u) => u.email === currentAccount) || users[0];
 
@@ -85,217 +85,188 @@ export const ClientSetupView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 select-none">
       <div>
-        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          <Laptop className="w-5 h-5 text-sky-400" />
+        <h1 className="text-xl font-bold text-[#202124] tracking-tight flex items-center gap-2">
+          <Laptop className="w-5 h-5 text-[#1a73e8]" />
           Client Configuration Guide
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-[#5f6368] mt-1">
           Parameters and profiles for connecting email clients (Thunderbird, Outlook, Apple Mail, iOS, Android) to VAWAY Mail Server.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800 gap-4 text-xs font-medium">
+      <div className="flex border-b border-[#dadce0] gap-6 text-xs font-medium">
         <button
           onClick={() => setSelectedClient('general')}
-          className={`py-3 border-b-2 transition-colors ${
-            selectedClient === 'general' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+          className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+            selectedClient === 'general'
+              ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+              : 'border-transparent text-[#5f6368] hover:text-[#202124]'
           }`}
         >
-          Server Parameters
+          <Mail className="w-3.5 h-3.5" />
+          Standard IMAP / SMTP
         </button>
         <button
           onClick={() => setSelectedClient('apple')}
-          className={`py-3 border-b-2 transition-colors ${
-            selectedClient === 'apple' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+          className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+            selectedClient === 'apple'
+              ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+              : 'border-transparent text-[#5f6368] hover:text-[#202124]'
           }`}
         >
-          iOS & macOS Profile
-        </button>
-        <button
-          onClick={() => setSelectedClient('thunderbird')}
-          className={`py-3 border-b-2 transition-colors ${
-            selectedClient === 'thunderbird' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          Thunderbird
+          <Smartphone className="w-3.5 h-3.5" />
+          Apple iOS / macOS (.mobileconfig)
         </button>
         <button
           onClick={() => setSelectedClient('dav')}
-          className={`py-3 border-b-2 transition-colors ${
-            selectedClient === 'dav' ? 'border-sky-500 text-sky-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+          className={`py-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+            selectedClient === 'dav'
+              ? 'border-[#0b57d0] text-[#0b57d0] font-bold'
+              : 'border-transparent text-[#5f6368] hover:text-[#202124]'
           }`}
         >
-          CalDAV & CardDAV (Radicale)
+          <Calendar className="w-3.5 h-3.5" />
+          CalDAV / CardDAV
         </button>
       </div>
 
+      {/* General Settings */}
       {selectedClient === 'general' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Inbound (IMAP/POP3) */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-indigo-400" />
-              <h2 className="text-sm font-semibold text-white">Incoming Mail Server (IMAP / POP3)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Inbound IMAP / POP3 */}
+          <div className="p-5 rounded-2xl bg-white border border-[#dadce0] shadow-xs space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#dadce0]/60 pb-3">
+              <Mail className="w-4 h-4 text-[#1a73e8]" />
+              <h2 className="text-sm font-bold text-[#202124]">Incoming Mail Server (IMAP / POP3)</h2>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                <div className="text-[11px] text-slate-400 mb-1">Server Hostname</div>
-                <div className="flex items-center justify-between font-mono text-slate-200 font-semibold">
-                  <span>{config.hostname}</span>
-                  <button
-                    onClick={() => copyText(config.hostname, 'in-host')}
-                    className="text-slate-400 hover:text-sky-400"
-                  >
-                    {copiedKey === 'in-host' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#5f6368]">Hostname:</span>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-[#202124]">
+                    <span>{config.hostname}</span>
+                    <button onClick={() => copyText(config.hostname, 'imap_host')}>
+                      {copiedKey === 'imap_host' ? (
+                        <Check className="w-3 h-3 text-[#137333]" />
+                      ) : (
+                        <Copy className="w-3 h-3 text-[#5f6368]" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                  <div className="text-[11px] text-slate-400 mb-0.5">IMAP (Recommended)</div>
-                  <div className="font-mono text-slate-200">Port 993 (SSL/TLS)</div>
-                  <div className="text-[10px] text-slate-500 mt-1">or Port 143 (STARTTLS)</div>
-                </div>
-                <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                  <div className="text-[11px] text-slate-400 mb-0.5">POP3</div>
-                  <div className="font-mono text-slate-200">Port 995 (SSL/TLS)</div>
-                  <div className="text-[10px] text-slate-500 mt-1">or Port 110 (STARTTLS)</div>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">IMAP Port:</span>
+                  <span className="font-mono font-bold text-[#1a73e8]">993 (SSL/TLS) or 143 (STARTTLS)</span>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                <div className="text-[11px] text-slate-400 mb-1">Username</div>
-                <div className="font-mono text-slate-200">{currentUser?.email} (full email address)</div>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">POP3 Port:</span>
+                  <span className="font-mono font-bold text-[#1a73e8]">995 (SSL/TLS)</span>
+                </div>
               </div>
 
-              <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                <div className="text-[11px] text-slate-400 mb-1">Authentication Method</div>
-                <div className="text-slate-200 font-medium">Normal Password (PLAIN or LOGIN)</div>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">Username:</span>
+                  <span className="font-mono font-bold text-[#202124]">{currentUser?.email}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Outbound (SMTP) */}
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <h2 className="text-sm font-semibold text-white">Outgoing Mail Server (SMTP Submission)</h2>
+          {/* Outbound SMTP */}
+          <div className="p-5 rounded-2xl bg-white border border-[#dadce0] shadow-xs space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#dadce0]/60 pb-3">
+              <ShieldCheck className="w-4 h-4 text-[#188038]" />
+              <h2 className="text-sm font-bold text-[#202124]">Outgoing Mail Server (SMTP)</h2>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                <div className="text-[11px] text-slate-400 mb-1">Server Hostname</div>
-                <div className="flex items-center justify-between font-mono text-slate-200 font-semibold">
-                  <span>{config.hostname}</span>
-                  <button
-                    onClick={() => copyText(config.hostname, 'out-host')}
-                    className="text-slate-400 hover:text-sky-400"
-                  >
-                    {copiedKey === 'out-host' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#5f6368]">Hostname:</span>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-[#202124]">
+                    <span>{config.hostname}</span>
+                    <button onClick={() => copyText(config.hostname, 'smtp_host')}>
+                      {copiedKey === 'smtp_host' ? (
+                        <Check className="w-3 h-3 text-[#137333]" />
+                      ) : (
+                        <Copy className="w-3 h-3 text-[#5f6368]" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                  <div className="text-[11px] text-slate-400 mb-0.5">SMTPS (SSL)</div>
-                  <div className="font-mono text-slate-200">Port 465 (SSL/TLS)</div>
-                  <div className="text-[10px] text-emerald-400 mt-1">Recommended</div>
-                </div>
-                <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                  <div className="text-[11px] text-slate-400 mb-0.5">Submission</div>
-                  <div className="font-mono text-slate-200">Port 587 (STARTTLS)</div>
-                  <div className="text-[10px] text-slate-500 mt-1">Standard</div>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">SMTP Port (SSL/TLS):</span>
+                  <span className="font-mono font-bold text-[#188038]">465</span>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-                <div className="text-[11px] text-slate-400 mb-1">Username & Authentication</div>
-                <div className="font-mono text-slate-200">{currentUser?.email}</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">Requires authentication (same as incoming)</div>
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">SMTP Submission (STARTTLS):</span>
+                  <span className="font-mono font-bold text-[#188038]">587</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#5f6368]">Authentication:</span>
+                  <span className="font-medium text-[#202124]">Required (Plain / Login)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Apple Profile Download */}
       {selectedClient === 'apple' && (
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4 max-w-2xl">
+        <div className="p-6 rounded-2xl bg-white border border-[#dadce0] shadow-xs space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-slate-800 rounded-xl">
-              <Smartphone className="w-6 h-6 text-sky-400" />
-            </div>
+            <Smartphone className="w-6 h-6 text-[#1a73e8]" />
             <div>
-              <h3 className="font-semibold text-white text-sm">Apple Mail / iOS Profile Provisioning</h3>
-              <p className="text-xs text-slate-400">
-                Installs automated settings on iPhone, iPad, or Mac for account <span className="font-mono text-slate-200">{currentUser?.email}</span>.
-              </p>
+              <h2 className="text-base font-bold text-[#202124]">Automatic Apple Profile (.mobileconfig)</h2>
+              <p className="text-xs text-[#5f6368]">Install directly on iOS (iPhone/iPad) or macOS to auto-configure Mail, IMAP, and SMTP with one click.</p>
             </div>
           </div>
 
-          <div className="p-4 bg-slate-800/60 border border-slate-700/50 rounded-xl text-xs text-slate-300 space-y-2">
-            <p>
-              1. Click the button below to download the standard <span className="font-mono text-sky-400">.mobileconfig</span> payload.
-            </p>
-            <p>
-              2. Open the downloaded file in macOS Settings or iOS Settings &gt; Profile Downloaded.
-            </p>
-            <p>
-              3. Enter your account password when prompted. All incoming IMAP and outgoing SMTP settings are automatically configured!
-            </p>
-          </div>
-
-          <button
-            onClick={handleDownloadAppleProfile}
-            className="flex items-center gap-2 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Download .mobileconfig Profile
-          </button>
-        </div>
-      )}
-
-      {selectedClient === 'thunderbird' && (
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4 max-w-2xl">
-          <h3 className="font-semibold text-white text-sm">Mozilla Thunderbird Auto-Configuration</h3>
-          <p className="text-xs text-slate-400">
-            VAWAY automatically serves an RFC-compliant autoconfig XML endpoint at <span className="font-mono text-sky-300">https://autoconfig.{config.hostname}/mail/config-v1.1.xml</span>.
-          </p>
-
-          <div className="p-4 bg-slate-800/60 border border-slate-700/50 rounded-xl text-xs text-slate-300 space-y-2">
-            <p>
-              Simply open Thunderbird &gt; Account Settings &gt; Add Mail Account, enter your name, email (<span className="font-mono text-slate-200">{currentUser?.email}</span>), and password.
-            </p>
-            <p>
-              Thunderbird will automatically detect IMAP on 993 SSL and SMTP on 465 SSL via the DNS CNAME record!
-            </p>
+          <div className="pt-3">
+            <button
+              onClick={handleDownloadAppleProfile}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#0b57d0] hover:bg-[#0842a0] text-white rounded-full font-semibold text-xs transition-colors shadow-xs"
+            >
+              <Download className="w-4 h-4" />
+              Download Apple Config Profile for {currentUser?.email}
+            </button>
           </div>
         </div>
       )}
 
+      {/* CalDAV / CardDAV */}
       {selectedClient === 'dav' && (
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-4 max-w-2xl">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-indigo-400" />
-            <h3 className="font-semibold text-white text-sm">Radicale WebDAV (Contacts & Calendars)</h3>
+        <div className="p-5 rounded-2xl bg-white border border-[#dadce0] shadow-xs space-y-4 text-xs">
+          <div className="flex items-center gap-2 border-b border-[#dadce0]/60 pb-3">
+            <Calendar className="w-4 h-4 text-[#f29900]" />
+            <h2 className="text-sm font-bold text-[#202124]">Radicale CalDAV & CardDAV Sync</h2>
           </div>
-          <p className="text-xs text-slate-400">
-            VAWAY bundles the Radicale server to sync address books and calendar appointments.
-          </p>
 
-          <div className="space-y-3 text-xs">
-            <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-              <div className="text-[11px] text-slate-400 mb-1">CalDAV (Calendar URL)</div>
-              <div className="font-mono text-slate-200">https://{config.hostname}/webdav/{currentUser?.email}/</div>
-            </div>
-            <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
-              <div className="text-[11px] text-slate-400 mb-1">CardDAV (Contacts URL)</div>
-              <div className="font-mono text-slate-200">https://{config.hostname}/webdav/{currentUser?.email}/contacts/</div>
+          <div className="p-3.5 bg-[#f8fafd] rounded-xl border border-[#dadce0] space-y-2">
+            <span className="text-[#5f6368] font-semibold">CalDAV / CardDAV Base URL:</span>
+            <div className="p-2.5 bg-white font-mono rounded-lg border border-[#dadce0] select-all text-[#202124]">
+              https://{config.hostname}/radicale/{currentUser?.email}/
             </div>
           </div>
         </div>

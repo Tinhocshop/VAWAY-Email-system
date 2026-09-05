@@ -9,50 +9,50 @@ export const AdminsView: React.FC = () => {
   const regularUsers = users.filter((u) => !u.global_admin);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 select-none">
       <div>
-        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-amber-400" />
+        <h1 className="text-xl font-bold text-[#202124] tracking-tight flex items-center gap-2">
+          <ShieldAlert className="w-5 h-5 text-[#1a73e8]" />
           Mail Server Administrators
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Manage users who possess administrative access to the VAWAY web panel and configuration settings.
+        <p className="text-xs text-[#5f6368] mt-1">
+          Manage accounts with global superuser administrative access to domains, DNS configurations, and tenant rules.
         </p>
       </div>
 
       {/* Global Admins Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+      <div className="bg-white border border-[#dadce0] rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-[#dadce0] bg-[#f8fafd] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-200">
-              Active Global Administrators ({globalAdmins.length})
+            <ShieldCheck className="w-4 h-4 text-[#137333]" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
+              Active Superuser Administrators ({globalAdmins.length})
             </h2>
           </div>
         </div>
 
-        <div className="divide-y divide-slate-800/60">
+        <div className="divide-y divide-[#dadce0]/60">
           {globalAdmins.map((admin) => (
             <div
               key={admin.email}
-              className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-slate-800/30 transition-colors"
+              className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-[#f8fafd] transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-full bg-[#fce8e6] text-[#c5221f] flex items-center justify-center font-bold">
                   {admin.displayed_name.charAt(0)}
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-200 font-mono">{admin.email}</div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="font-semibold text-[#202124] font-mono">{admin.email}</div>
+                  <div className="text-[11px] text-[#5f6368]">
                     {admin.displayed_name} • Full root permissions across all domains
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-medium">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-[#e6f4ea] text-[#137333] border border-[#ceead6] flex items-center gap-1 font-semibold">
                   <CheckCircle2 className="w-3 h-3" />
-                  Root Superuser
+                  Super Admin
                 </span>
                 {globalAdmins.length > 1 && (
                   <button
@@ -61,9 +61,9 @@ export const AdminsView: React.FC = () => {
                         updateUser(admin.email, { global_admin: false });
                       }
                     }}
-                    className="px-2.5 py-1 bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 rounded transition-colors"
+                    className="px-3 py-1 bg-[#f1f3f4] hover:bg-red-50 hover:text-[#d93025] text-[#5f6368] rounded-full transition-colors font-medium text-xs"
                   >
-                    Revoke Admin
+                    Revoke
                   </button>
                 )}
               </div>
@@ -73,31 +73,33 @@ export const AdminsView: React.FC = () => {
       </div>
 
       {/* Promote Users Section */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-slate-800 bg-slate-950/40">
+      <div className="bg-white border border-[#dadce0] rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-4 border-b border-[#dadce0] bg-[#f8fafd]">
           <div className="flex items-center gap-2">
-            <UserCheck className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-200">
+            <UserCheck className="w-4 h-4 text-[#1a73e8]" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#202124]">
               Promote Mailbox to Administrator
             </h2>
           </div>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-[#5f6368] mt-0.5">
             Select an existing mailbox to grant full VAWAY management capabilities.
           </p>
         </div>
 
         <div className="p-4 space-y-2">
           {regularUsers.length === 0 ? (
-            <div className="text-xs text-slate-500">All registered mailboxes are already administrators.</div>
+            <div className="text-xs text-[#5f6368] py-4 text-center">All registered mailboxes are already administrators.</div>
           ) : (
             regularUsers.map((u) => (
               <div
                 key={u.email}
-                className="p-3 rounded-lg bg-slate-800/40 border border-slate-800 flex items-center justify-between text-xs"
+                className="p-3.5 rounded-xl bg-[#f8fafd] border border-[#dadce0] flex items-center justify-between text-xs"
               >
                 <div>
-                  <div className="font-mono text-slate-200">{u.email}</div>
-                  <div className="text-[11px] text-slate-400">{u.displayed_name} ({u.domain_name})</div>
+                  <div className="font-mono text-[#202124] font-semibold">{u.email}</div>
+                  <div className="text-[11px] text-[#5f6368]">
+                    {u.displayed_name} ({u.domain_name})
+                  </div>
                 </div>
                 <button
                   onClick={() => {
@@ -105,9 +107,9 @@ export const AdminsView: React.FC = () => {
                       updateUser(u.email, { global_admin: true });
                     }
                   }}
-                  className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded font-medium transition-colors"
+                  className="px-3 py-1.5 bg-[#e8f0fe] hover:bg-[#d2e3fc] text-[#1a73e8] rounded-full font-semibold transition-colors text-xs"
                 >
-                  Promote to Admin
+                  Make Admin
                 </button>
               </div>
             ))

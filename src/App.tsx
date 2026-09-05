@@ -14,6 +14,14 @@ import { WebmailView } from './components/WebmailView';
 import { SetupWizardView } from './components/SetupWizardView';
 
 const viewTitles: Record<ViewType, string> = {
+  inbox: 'Inbox',
+  starred: 'Starred',
+  snoozed: 'Snoozed',
+  sent: 'Sent',
+  drafts: 'Drafts',
+  priority: 'Priority Task',
+  spam: 'Spam / Junk',
+  trash: 'Trash',
   dashboard: 'System Overview & Health',
   domains: 'Mail Domains',
   users: 'Mailboxes & Users',
@@ -27,10 +35,36 @@ const viewTitles: Record<ViewType, string> = {
 };
 
 const MainContent: React.FC = () => {
-  const [activeView, setActiveView] = useState<ViewType>('dashboard');
+  const [activeView, setActiveView] = useState<ViewType>('inbox');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
+
+  const isMailFolder = [
+    'inbox',
+    'starred',
+    'snoozed',
+    'sent',
+    'drafts',
+    'priority',
+    'spam',
+    'trash',
+    'webmail',
+  ].includes(activeView);
 
   const renderActiveView = () => {
+    if (isMailFolder) {
+      return (
+        <WebmailView
+          initialFolder={activeView === 'webmail' ? 'inbox' : activeView}
+          searchTerm={searchTerm}
+          isComposeOpen={isComposeOpen}
+          onCloseCompose={() => setIsComposeOpen(false)}
+          onOpenCompose={() => setIsComposeOpen(true)}
+        />
+      );
+    }
+
     switch (activeView) {
       case 'dashboard':
         return <DashboardView onNavigate={(view) => setActiveView(view)} />;
@@ -48,33 +82,45 @@ const MainContent: React.FC = () => {
         return <TokensView />;
       case 'client-setup':
         return <ClientSetupView />;
-      case 'webmail':
-        return <WebmailView />;
       case 'config-wizard':
         return <SetupWizardView />;
       default:
-        return <DashboardView onNavigate={(view) => setActiveView(view)} />;
+        return (
+          <WebmailView
+            initialFolder="inbox"
+            searchTerm={searchTerm}
+            isComposeOpen={isComposeOpen}
+            onCloseCompose={() => setIsComposeOpen(false)}
+            onOpenCompose={() => setIsComposeOpen(true)}
+          />
+        );
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
-      {/* Sidebar */}
-      <Sidebar
-        activeView={activeView}
-        onSelectView={(view) => setActiveView(view)}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+    <div className="min-h-screen bg-[#f6f8fc] text-[#202124] flex flex-col antialiased">
+      {/* Top Navbar */}
+      <Navbar
+        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        activeViewTitle={viewTitles[activeView] || 'Inbox'}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onOpenSettings={() => setActiveView('config-wizard')}
       />
 
-      {/* Content wrapper */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          activeViewTitle={viewTitles[activeView]}
+      {/* Main Body */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar
+          activeView={activeView}
+          onSelectView={(view) => setActiveView(view)}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onOpenCompose={() => setIsComposeOpen(true)}
         />
 
-        <main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto">
+        {/* Dynamic Main View */}
+        <main className="flex-1 p-2 sm:p-3 overflow-y-auto max-w-[1700px] w-full mx-auto">
           {renderActiveView()}
         </main>
       </div>
@@ -91,3 +137,4 @@ export function App() {
 }
 
 export default App;
+

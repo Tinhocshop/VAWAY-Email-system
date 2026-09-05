@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useVawayMail } from '../context/VawayMailContext';
-import { ArrowRightLeft, Plus, Trash2, Server, HelpCircle } from 'lucide-react';
+import { ArrowRightLeft, Plus, Trash2, Server, HelpCircle, X } from 'lucide-react';
 
 export const RelaysView: React.FC = () => {
   const { relays, addRelay, deleteRelay } = useVawayMail();
@@ -20,65 +20,61 @@ export const RelaysView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 select-none">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5 text-sky-400" />
+          <h1 className="text-xl font-bold text-[#202124] tracking-tight flex items-center gap-2">
+            <ArrowRightLeft className="w-5 h-5 text-[#1a73e8]" />
             Relayed Mail Domains
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#5f6368] mt-1">
             Domains whose incoming messages should be accepted by VAWAY and relayed forward to a designated downstream SMTP host.
           </p>
         </div>
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition-colors self-start shadow-xs"
+          className="flex items-center gap-1.5 px-4 py-2 bg-[#0b57d0] hover:bg-[#0842a0] text-white rounded-full text-xs font-semibold transition-colors self-start shadow-xs"
         >
           <Plus className="w-4 h-4" />
           Add Relayed Domain
         </button>
       </div>
 
-      <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl flex items-start gap-3 text-xs text-slate-400">
-        <HelpCircle className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+      <div className="p-4 bg-[#e8f0fe] border border-[#d2e3fc] rounded-2xl flex items-start gap-3 text-xs text-[#1a73e8]">
+        <HelpCircle className="w-4 h-4 text-[#1a73e8] shrink-0 mt-0.5" />
         <div>
-          VAWAY acts as a secondary MX or mail filter for relayed domains. All emails for these domains will pass spam and antivirus filtering before being handed over to your internal SMTP server.
+          VAWAY acts as a secondary MX or perimeter spam filter for relayed domains. All incoming emails for these domains pass anti-spam and antivirus checks before forwarding.
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-white border border-[#dadce0] rounded-2xl overflow-hidden shadow-xs">
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-950/60 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+          <thead className="bg-[#f8fafd] border-b border-[#dadce0] text-[#5f6368] font-semibold uppercase tracking-wider text-[10px]">
             <tr>
-              <th className="py-3 px-4">Domain Name</th>
-              <th className="py-3 px-4">Target Downstream SMTP Server</th>
-              <th className="py-3 px-4">Comment</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+              <th className="py-3.5 px-4">Domain Name</th>
+              <th className="py-3.5 px-4">Target Downstream SMTP Server</th>
+              <th className="py-3.5 px-4">Comment</th>
+              <th className="py-3.5 px-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-[#dadce0]/60">
             {relays.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-8 text-center text-slate-500 text-xs">
+                <td colSpan={4} className="py-8 text-center text-[#5f6368] text-xs">
                   No relayed domains configured.
                 </td>
               </tr>
             ) : (
               relays.map((relay) => (
-                <tr key={relay.name} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-medium text-slate-200">
-                    {relay.name}
-                  </td>
+                <tr key={relay.name} className="hover:bg-[#f8fafd] transition-colors">
+                  <td className="py-3.5 px-4 font-mono font-semibold text-[#202124]">{relay.name}</td>
                   <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-1.5 font-mono text-slate-300">
-                      <Server className="w-3.5 h-3.5 text-slate-400" />
+                    <div className="flex items-center gap-1.5 font-mono text-[#202124]">
+                      <Server className="w-3.5 h-3.5 text-[#1a73e8]" />
                       {relay.smtp}
                     </div>
                   </td>
-                  <td className="py-3.5 px-4 text-slate-400 text-[11px]">
-                    {relay.comment || '—'}
-                  </td>
+                  <td className="py-3.5 px-4 text-[#5f6368] text-[11px]">{relay.comment || '—'}</td>
                   <td className="py-3.5 px-4 text-right">
                     <button
                       onClick={() => {
@@ -86,7 +82,7 @@ export const RelaysView: React.FC = () => {
                           deleteRelay(relay.name);
                         }
                       }}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+                      className="p-1.5 text-[#5f6368] hover:text-[#d93025] hover:bg-red-50 rounded-full transition-colors"
                       title="Remove Relay"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -100,60 +96,63 @@ export const RelaysView: React.FC = () => {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md shadow-2xl p-5 space-y-4 text-xs">
-            <h3 className="text-base font-bold text-white">Add Relayed Domain</h3>
-            <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-[#dadce0] overflow-hidden">
+            <div className="p-5 border-b border-[#dadce0] flex items-center justify-between">
+              <h3 className="text-base font-bold text-[#202124]">Add Relayed Domain</h3>
+              <button onClick={() => setIsOpen(false)} className="p-1 text-[#5f6368] hover:bg-[#f1f3f4] rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Domain Name</label>
+                <label className="block text-[#5f6368] font-semibold mb-1">Domain Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. branch.company.com"
+                  placeholder="e.g. internal.company.com"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
+                  className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">
-                  Target SMTP Host & Port
-                </label>
+                <label className="block text-[#5f6368] font-semibold mb-1">Downstream SMTP Host:Port</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. smtp-in.branch.internal:25"
+                  placeholder="e.g. smtp.internal.lan:25"
                   value={smtp}
                   onChange={(e) => setSmtp(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                  className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Comment</label>
+                <label className="block text-[#5f6368] font-semibold mb-1">Comment</label>
                 <input
                   type="text"
-                  placeholder="e.g. Secondary mail host"
+                  placeholder="e.g. On-premise Exchange server relay"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
+                  className="w-full px-3.5 py-2.5 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
                 />
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#dadce0] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-medium"
+                  className="px-4 py-2 bg-[#f1f3f4] text-[#202124] rounded-full font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-semibold"
+                  className="px-5 py-2 bg-[#0b57d0] hover:bg-[#0842a0] text-white rounded-full font-semibold shadow-xs"
                 >
-                  Save Relay
+                  Create Relay
                 </button>
               </div>
             </form>

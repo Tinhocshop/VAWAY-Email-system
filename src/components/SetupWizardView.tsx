@@ -4,7 +4,6 @@ import {
   FileCode,
   Copy,
   Check,
-  Terminal,
   Settings2,
   Sparkles,
   ShieldCheck,
@@ -225,22 +224,22 @@ ${webmail === 'roundcube' ? `  webmail:
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 select-none">
       <div>
-        <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-          <FileCode className="w-5 h-5 text-sky-400" />
+        <h1 className="text-xl font-bold text-[#202124] tracking-tight flex items-center gap-2">
+          <FileCode className="w-5 h-5 text-[#1a73e8]" />
           VAWAY SaaS Infrastructure & Config Generator
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Cấu hình thông số kỹ thuật chuẩn cho dịch vụ SaaS Email doanh nghiệp theo tên miền riêng. Tự động sinh file <span className="font-mono text-sky-300">vaway.env</span> và <span className="font-mono text-sky-300">docker-compose.yml</span>.
+        <p className="text-xs text-[#5f6368] mt-1">
+          Cấu hình thông số kỹ thuật chuẩn cho dịch vụ SaaS Email doanh nghiệp theo tên miền riêng. Tự động sinh file <span className="font-mono text-[#1a73e8] font-semibold">vaway.env</span> và <span className="font-mono text-[#1a73e8] font-semibold">docker-compose.yml</span>.
         </p>
       </div>
 
       {/* SaaS Preset Profiles */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+      <div className="bg-white border border-[#dadce0] rounded-2xl p-5 shadow-xs">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+          <Sparkles className="w-4 h-4 text-[#f29900]" />
+          <h3 className="text-xs font-bold text-[#202124] uppercase tracking-wider">
             Cấu hình mẫu nhanh cho SaaS (SaaS Architecture Presets)
           </h3>
         </div>
@@ -248,13 +247,13 @@ ${webmail === 'roundcube' ? `  webmail:
           <button
             type="button"
             onClick={() => applyPreset('direct')}
-            className="p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-all group"
+            className="p-3.5 bg-[#f8fafd] hover:bg-[#e8f0fe] border border-[#dadce0] rounded-2xl text-left transition-all group"
           >
-            <div className="flex items-center gap-2 text-sky-400 font-semibold text-xs mb-1">
+            <div className="flex items-center gap-2 text-[#1a73e8] font-bold text-xs mb-1">
               <Globe className="w-4 h-4" />
               Direct VPS MX
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug">
+            <p className="text-[11px] text-[#5f6368] leading-snug">
               Gửi trực tiếp từ VPS IP sạch, cổng 25 mở, không dùng relay.
             </p>
           </button>
@@ -262,13 +261,13 @@ ${webmail === 'roundcube' ? `  webmail:
           <button
             type="button"
             onClick={() => applyPreset('sendgrid')}
-            className="p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-all group"
+            className="p-3.5 bg-[#f8fafd] hover:bg-[#e6f4ea] border border-[#dadce0] rounded-2xl text-left transition-all group"
           >
-            <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs mb-1">
+            <div className="flex items-center gap-2 text-[#188038] font-bold text-xs mb-1">
               <Zap className="w-4 h-4" />
               SendGrid Relay
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug">
+            <p className="text-[11px] text-[#5f6368] leading-snug">
               Relay qua SendGrid (587), tỷ lệ vào Inbox cao, chống chặn port 25.
             </p>
           </button>
@@ -276,13 +275,13 @@ ${webmail === 'roundcube' ? `  webmail:
           <button
             type="button"
             onClick={() => applyPreset('ses')}
-            className="p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-all group"
+            className="p-3.5 bg-[#f8fafd] hover:bg-[#fef7e0] border border-[#dadce0] rounded-2xl text-left transition-all group"
           >
-            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs mb-1">
+            <div className="flex items-center gap-2 text-[#b06000] font-bold text-xs mb-1">
               <Zap className="w-4 h-4" />
               Amazon SES Relay
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug">
+            <p className="text-[11px] text-[#5f6368] leading-snug">
               Smart host qua AWS SES, tối ưu chi phí SaaS khối lượng lớn.
             </p>
           </button>
@@ -290,254 +289,192 @@ ${webmail === 'roundcube' ? `  webmail:
           <button
             type="button"
             onClick={() => applyPreset('enterprise')}
-            className="p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-left transition-all group"
+            className="p-3.5 bg-[#f8fafd] hover:bg-[#f3e8fd] border border-[#dadce0] rounded-2xl text-left transition-all group"
           >
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-xs mb-1">
+            <div className="flex items-center gap-2 text-[#9334e8] font-bold text-xs mb-1">
               <ShieldCheck className="w-4 h-4" />
               Enterprise High-Sec
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug">
+            <p className="text-[11px] text-[#5f6368] leading-snug">
               Nén zstd, quét ClamAV, chống backscatter và bảo mật toàn diện.
             </p>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Settings Form */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="bg-white border border-[#dadce0] rounded-2xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#dadce0]/60 pb-3">
             <div className="flex items-center gap-2">
-              <Settings2 className="w-4 h-4 text-sky-400" />
-              <h2 className="text-sm font-semibold text-white">Thông số Môi trường (Environment)</h2>
+              <Settings2 className="w-4 h-4 text-[#1a73e8]" />
+              <h2 className="text-sm font-bold text-[#202124]">Thông số Môi trường (Environment)</h2>
             </div>
           </div>
 
           <form onSubmit={handleApply} className="space-y-3 text-xs">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Secret Key (Mã bí mật hệ thống)</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Secret Key (Mã bí mật hệ thống)</label>
               <input
                 type="text"
                 value={secretKey}
                 onChange={(e) => setSecretKey(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono text-[11px] focus:outline-none focus:border-[#1a73e8]"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Tên miền SaaS chính (Primary Domain)</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Tên miền SaaS chính (Primary Domain)</label>
               <input
                 type="text"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Máy chủ thư FQDN (Hostnames)</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Máy chủ thư FQDN (Hostnames)</label>
               <input
                 type="text"
                 value={hostname}
                 onChange={(e) => setHostname(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Postmaster Admin</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Postmaster Admin</label>
               <input
                 type="text"
                 value={postmaster}
                 onChange={(e) => setPostmaster(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Chứng chỉ SSL / TLS</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">TLS / SSL Mode</label>
               <select
                 value={tlsFlavor}
                 onChange={(e) => setTlsFlavor(e.target.value as any)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
               >
-                <option value="letsencrypt">Let's Encrypt (Tự động cấp phát ACME - Khuyến nghị)</option>
-                <option value="cert">Chứng chỉ riêng (/certs)</option>
-                <option value="mail">Self-Signed nội bộ</option>
-                <option value="notls">Chạy sau Reverse Proxy</option>
+                <option value="letsencrypt">Let's Encrypt (Automated ACME)</option>
+                <option value="mail-letsencrypt">Let's Encrypt with Mail subdomains</option>
+                <option value="cert">Custom Certificate (/certs volume)</option>
+                <option value="notls">Disabled (Plain Text)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Giao diện Webmail</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Webmail Client Engine</label>
               <select
                 value={webmail}
                 onChange={(e) => setWebmail(e.target.value as any)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
               >
                 <option value="roundcube">Roundcube Webmail</option>
-                <option value="snappy">SnappyMail</option>
-                <option value="none">Chỉ dùng App Mail qua IMAP/POP</option>
+                <option value="snappymail">Snappymail</option>
+                <option value="none">None (API / Headless Only)</option>
               </select>
             </div>
 
-            <label className="flex items-center gap-2 text-slate-300 cursor-pointer pt-1">
-              <input
-                type="checkbox"
-                checked={antivirus}
-                onChange={(e) => setAntivirus(e.target.checked)}
-                className="rounded bg-slate-800 border-slate-700 text-sky-600"
-              />
-              <span>Quét mã độc ClamAV Antivirus (Yêu cầu ~1.5GB RAM)</span>
-            </label>
+            <div>
+              <label className="block text-[#5f6368] font-semibold mb-1">Storage Compression</label>
+              <select
+                value={compression}
+                onChange={(e) => setCompression(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] focus:outline-none focus:border-[#1a73e8]"
+              >
+                <option value="gz">Gzip (.gz - Standard)</option>
+                <option value="zstd">Zstandard (zstd - High Ratio)</option>
+                <option value="lz4">LZ4 (Fastest I/O)</option>
+              </select>
+            </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Docker Internal Subnet</label>
+              <label className="block text-[#5f6368] font-semibold mb-1">Docker Subnet</label>
               <input
                 type="text"
                 value={subnet}
                 onChange={(e) => setSubnet(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono"
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
               />
             </div>
 
-            {/* Storage & Performance */}
-            <div className="border-t border-slate-800 pt-3">
-              <h3 className="text-slate-300 font-semibold mb-2">Tối ưu Nén & Lưu trữ (Storage)</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">COMPRESSION</label>
-                  <select
-                    value={compression}
-                    onChange={(e) => setCompression(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  >
-                    <option value="gz">gz (Gzip - Chuẩn tốt nhất)</option>
-                    <option value="bz2">bz2 (Bzip2)</option>
-                    <option value="lz4">lz4 (Tốc độ cao)</option>
-                    <option value="zstd">zstd (Hiện đại, nén cao)</option>
-                    <option value="none">none (Không nén)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">LEVEL (1-9)</label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={9}
-                    value={compressionLevel}
-                    onChange={(e) => setCompressionLevel(Number(e.target.value))}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-[#5f6368] font-semibold mb-1">Relayhost (Smart Host SMTP)</label>
+              <input
+                type="text"
+                placeholder="[smtp.sendgrid.net]:587"
+                value={relayhost}
+                onChange={(e) => setRelayhost(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
+              />
             </div>
 
-            {/* Reverse Proxy */}
-            <div className="border-t border-slate-800 pt-3">
-              <h3 className="text-slate-300 font-semibold mb-2">Reverse Proxy & Nhận diện IP Thật</h3>
-              <div className="space-y-2">
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">REAL_IP_FROM (Subnet tin cậy)</label>
-                  <input
-                    type="text"
-                    value={realIpFrom}
-                    onChange={(e) => setRealIpFrom(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">REAL_IP_HEADER</label>
-                  <input
-                    type="text"
-                    value={realIpHeader}
-                    onChange={(e) => setRealIpHeader(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-[#5f6368] font-semibold mb-1">Real IP Subnets</label>
+              <input
+                type="text"
+                value={realIpFrom}
+                onChange={(e) => setRealIpFrom(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
+              />
             </div>
 
-            {/* Anti-Spam & Relay Outbound */}
-            <div className="border-t border-slate-800 pt-3">
-              <h3 className="text-slate-300 font-semibold mb-2">Bảo mật Chống Spam & Relay Thư</h3>
-              <label className="flex items-center gap-2 text-slate-300 cursor-pointer mb-2">
-                <input
-                  type="checkbox"
-                  checked={rejectUnlistedRecipient}
-                  onChange={(e) => setRejectUnlistedRecipient(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-sky-600"
-                />
-                <span>REJECT_UNLISTED_RECIPIENT (Chống backscatter/quét hòm thư)</span>
-              </label>
+            <div>
+              <label className="block text-[#5f6368] font-semibold mb-1">Real IP Header</label>
+              <input
+                type="text"
+                value={realIpHeader}
+                onChange={(e) => setRealIpHeader(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-slate-400 text-[11px]">RELAYHOST (Smart Host Relay)</label>
-                    <span className="text-[10px] text-slate-500">Để trống nếu gửi trực tiếp</span>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="VD: [smtp.sendgrid.net]:587 hoặc [email-smtp.us-east-1.amazonaws.com]:587"
-                    value={relayhost}
-                    onChange={(e) => setRelayhost(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-slate-400 text-[11px]">RELAYNETS (Dải mạng tin cậy)</label>
-                    <span className="text-[10px] text-emerald-400">127.0.0.1/32 (Chống Open Relay)</span>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="127.0.0.1/32"
-                    value={relaynets}
-                    onChange={(e) => setRelaynets(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 text-[11px] mb-1">WEBROOT_REDIRECT</label>
-                  <input
-                    type="text"
-                    value={webrootRedirect}
-                    onChange={(e) => setWebrootRedirect(e.target.value)}
-                    className="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 font-mono text-[11px]"
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-[#5f6368] font-semibold mb-1">Webroot Redirect</label>
+              <input
+                type="text"
+                value={webrootRedirect}
+                onChange={(e) => setWebrootRedirect(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
+              />
             </div>
 
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-[#0b57d0] hover:bg-[#0842a0] text-white rounded-full font-semibold transition-colors shadow-xs"
               >
-                <Check className="w-4 h-4" />
-                Áp dụng thông số
+                Cập nhật cấu hình
               </button>
             </div>
           </form>
         </div>
 
-        {/* Output Code Panel */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between p-3 border-b border-slate-800 bg-slate-950/50">
-            <div className="flex items-center gap-2">
+        {/* Output Code preview */}
+        <div className="lg:col-span-2 bg-white border border-[#dadce0] rounded-2xl p-5 shadow-xs space-y-4 flex flex-col">
+          <div className="flex items-center justify-between border-b border-[#dadce0]/60 pb-3">
+            <div className="flex items-center gap-4 text-xs font-medium">
               <button
                 onClick={() => setActiveTab('env')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  activeTab === 'env' ? 'bg-slate-800 text-sky-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                className={`pb-1 border-b-2 font-semibold transition-colors ${
+                  activeTab === 'env'
+                    ? 'border-[#0b57d0] text-[#0b57d0]'
+                    : 'border-transparent text-[#5f6368] hover:text-[#202124]'
                 }`}
               >
-                vaway.env
+                vaway.env (Config)
               </button>
               <button
                 onClick={() => setActiveTab('compose')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  activeTab === 'compose' ? 'bg-slate-800 text-sky-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                className={`pb-1 border-b-2 font-semibold transition-colors ${
+                  activeTab === 'compose'
+                    ? 'border-[#0b57d0] text-[#0b57d0]'
+                    : 'border-transparent text-[#5f6368] hover:text-[#202124]'
                 }`}
               >
                 docker-compose.yml
@@ -546,39 +483,29 @@ ${webmail === 'roundcube' ? `  webmail:
 
             <button
               onClick={() => copyText(activeTab === 'env' ? generateVawayEnv() : generateDockerCompose(), activeTab === 'compose')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#f1f3f4] hover:bg-[#e8eaed] text-[#202124] rounded-full text-xs font-semibold transition-colors border border-[#dadce0]"
             >
               {(activeTab === 'env' ? copiedEnv : copiedCompose) ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400">Đã sao chép!</span>
+                  <Check className="w-3.5 h-3.5 text-[#137333]" />
+                  <span>Đã sao chép!</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5" />
-                  <span>Sao chép cấu hình</span>
+                  <span>Sao chép file</span>
                 </>
               )}
             </button>
           </div>
 
-          <pre className="p-4 flex-1 bg-slate-950 font-mono text-[11px] text-slate-300 overflow-x-auto select-all leading-relaxed">
-            {activeTab === 'env' ? generateVawayEnv() : generateDockerCompose()}
-          </pre>
-
-          <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-xs text-slate-400 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-sky-400 shrink-0" />
-              <span>Khởi động máy chủ: <code className="text-slate-200 font-mono bg-slate-800 px-1.5 py-0.5 rounded">docker-compose -p vaway up -d</code></span>
-            </div>
-            <div className="hidden sm:flex items-center gap-1 text-emerald-400 text-[11px]">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Bảo mật chống Open Relay đạt chuẩn</span>
-            </div>
+          <div className="flex-1 bg-[#1e1e1e] rounded-2xl p-4 overflow-auto font-mono text-xs text-[#d4d4d4] select-all max-h-[500px]">
+            <pre className="whitespace-pre">
+              {activeTab === 'env' ? generateVawayEnv() : generateDockerCompose()}
+            </pre>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
