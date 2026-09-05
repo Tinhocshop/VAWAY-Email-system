@@ -42,42 +42,48 @@
 
 ## 2. Giải nghĩa & Thiết lập các biến Môi trường (Environment Variables)
 
-Dưới đây là 8 biến cấu hình chính xuất hiện trong giao diện thiết lập gửi/nhận email của VAWAY Mail Server:
+Dưới đây là bảng 8 biến cấu hình trọng yếu được tự động điền sẵn giá trị chuẩn cho nền tảng SaaS Email VAWAY:
 
-| Tên biến | Giá trị đề xuất | Ý nghĩa & Hướng dẫn |
+| Tên biến | Giá trị đề xuất | Ý nghĩa & Hướng dẫn Kỹ thuật |
 |---|---|---|
-| `COMPRESSION` | `gz` | Định dạng nén dữ liệu hòm thư khi lưu trữ trên ổ đĩa (`gz`, `bz2`, `lz4`, `zstd`, `none`). `gz` là chuẩn tương thích cao nhất. |
-| `COMPRESSION_LEVEL` | `6` | Mức độ nén từ 1 đến 9. Mức `6` là tỷ lệ vàng giữa tải CPU và dung lượng tiết kiệm. |
-| `REAL_IP_FROM` | `127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16` | Dải IP / Subnet tin cậy của Reverse Proxy hoặc Docker Network. Cho phép Nginx đọc đúng IP thật của client thay vì IP nội bộ của proxy. |
+| `COMPRESSION` | `gz` (hoặc `zstd`) | Định dạng nén dữ liệu hòm thư khi lưu trữ trên ổ đĩa (`gz`, `bz2`, `lz4`, `zstd`, `none`). `gz` là chuẩn tương thích cao nhất; `zstd` tối ưu dung lượng nhất cho SaaS lớn. |
+| `COMPRESSION_LEVEL` | `6` | Mức độ nén từ 1 đến 9. Mức `6` là tỷ lệ vàng giữa tải CPU máy chủ và dung lượng đĩa tiết kiệm. |
+| `REAL_IP_FROM` | `127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16` | Dải IP / Subnet tin cậy của Reverse Proxy hoặc Docker Network. Cho phép Nginx đọc đúng IP thật của người dùng thay vì IP nội bộ của proxy. |
 | `REAL_IP_HEADER` | `X-Forwarded-For` | HTTP Header chứa IP thật của người gửi gửi từ Reverse Proxy (`X-Forwarded-For` hoặc `X-Real-IP`). |
-| `REJECT_UNLISTED_RECIPIENT` | `yes` | Bật tính năng từ chối ngay tại giao thức SMTP nếu người nhận không tồn tại trong hệ thống. Ngăn chặn spammer dò quét email và bảo vệ hàng đợi thư. |
-| `RELAYHOST` | *(Để trống)* hoặc `[smtp.sendgrid.net]:587` | Máy chủ SMTP trung gian (Smart Host). Để trống nếu server gửi mail trực tiếp (Direct MX). Nếu gửi qua SendGrid, Amazon SES, Brevo thì điền thông số tại đây. |
-| `RELAYNETS` | *(Để trống)* hoặc `127.0.0.1/32` | Các dải mạng nội bộ được phép gửi thư không cần đăng nhập mật khẩu. **Khuyến cáo để trống** để tránh nguy cơ Open Relay. |
+| `REJECT_UNLISTED_RECIPIENT` | `yes` | Bật tính năng từ chối ngay tại giao thức SMTP nếu người nhận không tồn tại trong hệ thống. Ngăn chặn triệt để spammer dò quét email (Directory Harvest Attack) và bảo vệ hàng đợi thư (Queue). |
+| `RELAYHOST` | *(Để trống khi Direct VPS)* hoặc `[smtp.sendgrid.net]:587` | Máy chủ SMTP trung gian (Smart Host). Khi triển khai SaaS, nếu IP VPS chưa có danh tiếng cao hoặc bị nhà mạng chặn port 25, cấu hình Relay qua SendGrid, Amazon SES hoặc Brevo để đảm bảo 100% email vào Inbox. |
+| `RELAYNETS` | `127.0.0.1/32` | Các dải mạng nội bộ được phép gửi thư không cần đăng nhập mật khẩu. **Bắt buộc để 127.0.0.1/32** để triệt tiêu hoàn toàn nguy cơ Open Relay (bị hacker lợi dụng phát tán thư rác). |
 | `WEBROOT_REDIRECT` | `/webmail` | Đường dẫn chuyển hướng khi người dùng truy cập trang chủ domain gốc (ví dụ `/webmail` hoặc `/admin`). |
 
 ---
 
-## 3. Nguyên tắc Bảo mật Dữ liệu (Security Guidelines)
+## 3. Nguyên tắc Bảo mật Dữ liệu & Vận hành SaaS (Security & Operational Guidelines)
 
-1. **Chống Open Relay:** Không bao giờ mở rộng `RELAYNETS` ra ngoài `127.0.0.1` trừ khi máy chủ nằm hoàn toàn trong subnet VPN riêng biệt có tường lửa.
-2. **Bảo mật Khóa DKIM:** Mỗi domain tạo mới đều được cấp cặp khóa DKIM riêng biệt (RSA 2048-bit). Khóa riêng tư (`private.key`) phải luôn được lưu trữ an toàn trong volume Docker `/vaway/dkim/` với phân quyền `chmod 600`.
-3. **Giới hạn tốc độ (Rate Limiting):** Cấu hình `AUTH_RATELIMIT_IP=10/minute` và `AUTH_RATELIMIT_USER=50/minute` nhằm chống lại các cuộc tấn công Brute-Force mật khẩu SMTP/IMAP.
-4. **Xác thực API Tokens:** Các API token sinh ra tuân thủ định dạng ngẫu nhiên an toàn mật mã (`crypto.getRandomValues`) và có thời hạn tự động hết hạn (`expires_at`).
+1. **Tuyệt đối Chống Open Relay:** Giữ `RELAYNETS=127.0.0.1/32`. Không bao giờ mở rộng subnet công khai để tránh bị đưa vào Spamhaus / SORBS Blacklist.
+2. **Bộ 3 Xác thực Domain (SPF, DKIM, DMARC):**
+   - **SPF:** `v=spf1 mx a:mail.domain.com ~all` (Xác thực IP gửi thư).
+   - **DKIM:** Ký số RSA 2048-bit với selector `vaway._domainkey` cho từng tên miền khách hàng.
+   - **DMARC:** `v=DMARC1; p=reject; rua=mailto:admin@domain.com` bảo vệ thương hiệu khách hàng khỏi bị giả mạo thư.
+3. **Giới hạn Tốc độ (Rate Limiting):** Cấu hình `AUTH_RATELIMIT_IP=10/minute` và `AUTH_RATELIMIT_USER=50/minute` nhằm chống Brute-Force mật khẩu SMTP/IMAP.
+4. **Bảo vệ Hàng Đợi (Queue Backscatter Prevention):** Bật `REJECT_UNLISTED_RECIPIENT=yes` giúp máy chủ từ chối thư rác ngay từ bắt tay TCP `RCPT TO`, không nhận thư rác vào bộ đệm rồi mới trả lại lỗi.
 
 ---
 
 ## 4. Nhật ký Sửa lỗi (Troubleshooting & Resolution Log)
 
-1. **Lỗi: `.env.example` chứa cú pháp Jinja template dở dang (`{% if webmail_type !=`)**
+1. **Lỗi: Popup yêu cầu nhập biến môi trường `RELAYHOST` và `RELAYNETS`**
+   - *Nguyên nhân:* File `.env.example` có các biến để trống không có ghi chú hoặc giá trị khuyến nghị, dẫn đến hệ thống hỏi giá trị bảo mật.
+   - *Cách xử lý:* Đã cập nhật `.env.example` chuẩn hóa đầy đủ tài liệu, gán giá trị mặc định tối ưu (`RELAYNETS=127.0.0.1/32`, `RELAYHOST` chú thích rõ tùy chọn Direct/Relay).
+2. **Bổ sung SaaS Architecture Presets vào Setup Wizard:**
+   - *Yêu cầu:* Cho phép quản trị viên chọn nhanh mô hình: Direct VPS MX, SendGrid Relay, Amazon SES Relay, Enterprise High-Sec.
+   - *Cách xử lý:* Tích hợp 4 Profile mẫu vào `SetupWizardView.tsx`, người dùng chỉ cần 1 click là các thông số tự động điền chính xác.
+3. **Lỗi: `.env.example` chứa cú pháp Jinja template dở dang (`{% if webmail_type !=`)**
    - *Nguyên nhân:* File `.env.example` gốc từ repo Python có chứa template Jinja chưa render.
    - *Cách xử lý:* Đã viết lại `.env.example` sạch sẽ, chuẩn cú pháp dotenv, có sẵn giá trị mặc định tối ưu.
-2. **Lỗi: AI Studio hiển thị popup "Enter your environment variable to continue" liên tục**
-   - *Nguyên nhân:* Do các biến trong `.env.example` để trống không có giá trị mặc định.
-   - *Cách xử lý:* Điền đầy đủ giá trị mặc định an toàn cho các biến `COMPRESSION`, `COMPRESSION_LEVEL`, `REAL_IP_FROM`, `REAL_IP_HEADER`, `REJECT_UNLISTED_RECIPIENT`, `WEBROOT_REDIRECT`.
-3. **Lỗi TS6133 & TS2339 khi biên dịch TypeScript (`compile_applet`)**
+4. **Lỗi TS6133 & TS2339 khi biên dịch TypeScript (`compile_applet`)**
    - *Nguyên nhân:* Các import icon không dùng đến và thuộc tính `expires_at`, `compression`, `relayhost` chưa được khai báo đầy đủ trong `src/types.ts`.
    - *Cách xử lý:* Bổ sung đầy đủ interface `VawayMailConfig` và `Token`, đồng thời dọn dẹp các biến/import thừa. Kiểm tra lại bằng `npm run lint` và `npm run build` thành công 100%.
-4. **Tái cấu trúc & Đổi mới thương hiệu sang VAWAY Mail Server (Rebranding):**
+5. **Tái cấu trúc & Đổi mới thương hiệu sang VAWAY Mail Server (Rebranding):**
    - *Yêu cầu:* Loại bỏ toàn bộ nhãn hiệu cũ, chuyển đổi toàn diện sang thương hiệu VAWAY.
    - *Cách xử lý:* Cập nhật toàn bộ Provider, hook `useVawayMail`, logo SVG vector hiện đại, file cấu hình `.env`, `docker-compose`, profile `.mobileconfig` và hệ thống DNS DKIM selector `vaway._domainkey`.
 
