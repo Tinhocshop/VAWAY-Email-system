@@ -404,14 +404,81 @@ ${webmail === 'roundcube' ? `  webmail:
             </div>
 
             <div>
-              <label className="block text-[#5f6368] font-semibold mb-1">Relayhost (Smart Host SMTP)</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[#5f6368] font-semibold">Relayhost (Smart Host SMTP trung gian)</label>
+                <span className="text-[10px] text-[#1a73e8] bg-[#e8f0fe] px-2 py-0.5 rounded-full font-medium">Tùy chọn</span>
+              </div>
               <input
                 type="text"
-                placeholder="[smtp.sendgrid.net]:587"
+                placeholder="Để trống nếu gửi trực tiếp từ VPS, hoặc [smtp.sendgrid.net]:587"
                 value={relayhost}
                 onChange={(e) => setRelayhost(e.target.value)}
                 className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
               />
+              {/* 1-Click Providers */}
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                <button
+                  type="button"
+                  onClick={() => setRelayhost('')}
+                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+                    relayhost === ''
+                      ? 'bg-[#e8f0fe] text-[#1a73e8] border-[#d2e3fc] font-semibold'
+                      : 'bg-white text-[#5f6368] border-[#dadce0] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  Direct VPS (Trống)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRelayhost('[smtp.sendgrid.net]:587')}
+                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+                    relayhost === '[smtp.sendgrid.net]:587'
+                      ? 'bg-[#e8f0fe] text-[#1a73e8] border-[#d2e3fc] font-semibold'
+                      : 'bg-white text-[#5f6368] border-[#dadce0] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  SendGrid
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRelayhost('[email-smtp.us-east-1.amazonaws.com]:587')}
+                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+                    relayhost === '[email-smtp.us-east-1.amazonaws.com]:587'
+                      ? 'bg-[#e8f0fe] text-[#1a73e8] border-[#d2e3fc] font-semibold'
+                      : 'bg-white text-[#5f6368] border-[#dadce0] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  AWS SES
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRelayhost('[smtp-relay.brevo.com]:587')}
+                  className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+                    relayhost === '[smtp-relay.brevo.com]:587'
+                      ? 'bg-[#e8f0fe] text-[#1a73e8] border-[#d2e3fc] font-semibold'
+                      : 'bg-white text-[#5f6368] border-[#dadce0] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  Brevo
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[#5f6368] font-semibold">Relaynets (Mạng nội bộ cho phép gửi)</label>
+                <span className="text-[10px] text-[#137333] bg-[#e6f4ea] px-2 py-0.5 rounded-full font-medium">Bảo mật chuẩn</span>
+              </div>
+              <input
+                type="text"
+                placeholder="127.0.0.1/32"
+                value={relaynets}
+                onChange={(e) => setRelaynets(e.target.value)}
+                className="w-full px-3.5 py-2 bg-[#f8fafd] border border-[#dadce0] rounded-xl text-[#202124] font-mono focus:outline-none focus:border-[#1a73e8]"
+              />
+              <p className="text-[10px] text-[#5f6368] mt-1 leading-snug">
+                Khuyến nghị giữ nguyên <span className="font-mono text-[#202124] font-semibold">127.0.0.1/32</span> để chống Open Relay 100%.
+              </p>
             </div>
 
             <div>
