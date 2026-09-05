@@ -2,7 +2,7 @@
 
 Hệ thống quản trị và vận hành Email doanh nghiệp đa khách hàng (Multi-Tenant SaaS Email Platform) theo tên miền riêng dạng `user@domain.com`.
 
-## 📁 Cấu trúc Dự án Sau Dọn dẹp (Cleaned Project Structure)
+## 📁 Cấu trúc Dự án (Cleaned Project Structure)
 
 ```
 /
