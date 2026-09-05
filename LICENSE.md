@@ -4,7 +4,7 @@ Copyright (c) 2016 All VAWAY contributors at the date
 
 This software consists of voluntary contributions made by multiple individuals.
 For exact contribution history, see the revision history available at
-https://github.com/Tinhocshop/Vaway-Email
+[https://github.com/Tinhocshop/Vaway-Email](https://github.com/Tinhocshop/VAWAY-Email-system/tree/main?tab=License-1-ov-file)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
