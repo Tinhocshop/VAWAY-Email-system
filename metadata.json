@@ -1,0 +1,8 @@
+{
+  "name": "VAWAY Mail Server",
+  "description": "Nền tảng quản trị và vận hành Email doanh nghiệp đa khách hàng VAWAY Mail Server theo tên miền riêng.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

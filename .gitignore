@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+.DS_Store
+.idea
+.vscode
+.todos/
+.memory/
+.claude_code_search/
